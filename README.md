@@ -1,66 +1,174 @@
-## Foundry
+# Foundry Commands
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Этот документ описывает основные команды Foundry, используемые для разработки и тестирования смарт-контрактов на Ethereum.
 
-Foundry consists of:
+## Основные команды
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### 1. `forge init`
 
-## Documentation
+Инициализирует новый проект Foundry. Создает структуру каталогов и необходимые файлы для начала работы.
 
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+forge init <project-name>
 ```
 
-### Test
+### 2. `forge test`
 
-```shell
-$ forge test
+Запускает тесты, написанные для вашего проекта. По умолчанию ищет тесты в каталоге `test`
+
+```bash
+forge test
 ```
 
-### Format
+Опция `--mt` позволяет запускать отдельный тест
 
-```shell
-$ forge fmt
+```bash
+forge test --mt <test-name>
 ```
 
-### Gas Snapshots
+### 3. `forge build` или `forge b` или `forge compile`
 
-```shell
-$ forge snapshot
+Компилирует смарт-контракты в вашем проекте и создает артефакты компиляции.
+
+```bash
+forge build
 ```
 
-### Anvil
+### 4. `forge script`
 
-```shell
-$ anvil
+Запускает скрипты, написанные для вашего проекта.
+
+```bash
+forge script <script-name>
 ```
 
-### Deploy
+### 5. `forge coverage`
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+Генерирует отчет о покрытии тестами для вашего проекта, показывая, какие части кода были протестированы.
+
+```bash
+forge coverage
 ```
 
-### Cast
+### 6. `forge install`
 
-```shell
-$ cast <subcommand>
+Устанавливает зависимости для вашего проекта, указанные в файле `foundry.toml`.
+
+```bash
+forge install
 ```
 
-### Help
+Также устанавливает конкретный пакет.
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```bash
+forge install <package-name>
+```
+
+### 7. `anvil`
+
+Запускает локальный Ethereum узел для тестирования. Anvil позволяет вам взаимодействовать с контрактами в локальной среде.
+
+```bash
+anvil
+```
+
+### 8. `chisel`
+
+Интерактивная среда Solidity.
+
+```bash
+chisel
+```
+
+### 9. `cast wallet import --interactive`
+
+Импортирует кошелек в ваш проект с помощью интерактивного интерфейса. Позволяет легко управлять кошельками.
+
+```bash
+cast wallet import --interactive
+```
+
+### 10. `cast wallet import --interactive`
+
+Импортирует кошелек в ваш проект с помощью интерактивного интерфейса. Позволяет легко управлять кошельками.
+
+```bash
+cast wallet import --interactive
+```
+
+# Makefile
+
+## Правильное написание в Makefile
+
+1. **Определение переменных**: Используйте переменные для хранения путей и опций, чтобы избежать дублирования.
+
+```makefile
+CC := forge
+TEST_DIR := test
+```
+
+2. **Правила**: Определяйте правила для выполнения команд. Например, для тестирования.
+
+```makefile
+test:
+    forge test $(TEST_DIR)
+```
+
+3. **Отступы**: Используйте <u>табуляцию</u> для отступов в правилах, так как пробелы не будут работать.
+
+4. **Цели по умолчанию**: Укажите цель по умолчанию, которая будет выполняться при запуске `make` без аргументов.
+
+```makefile
+all: build test
+```
+
+5. **Чистка**: Добавьте правило для очистки артефактов сборки.
+
+```makefile
+clean:
+    rm -rf out/*
+
+```
+
+6. **Чистка**: Добавьте правило для очистки артефактов сборки.
+
+```makefile
+clean:
+    rm -rf out/*
+
+```
+
+7. **.PHONY**: Используйте `.PHONY` для определения целей, которые не соответствуют файлам. Это гарантирует, что команды будут выполняться даже если файлы с такими именами существуют.
+
+```makefile
+.PHONY: all build test clean
+```
+
+8. **-include**: Используйте `-include` для включения других файлов, которые могут не существовать. Это позволяет избежать ошибок, если файл не найден.
+
+```makefile
+-include .env
+```
+
+Пример:
+
+```makefile
+-include .env
+
+CC := forge
+TEST_DIR := test
+
+.PHONY: all build test clean
+
+all: build test
+
+build:
+	forge build
+
+test:
+	forge test $(TEST_DIR)
+
+clean:
+	rm -rf out/*
+
 ```
